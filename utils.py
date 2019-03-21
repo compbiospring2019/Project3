@@ -1,6 +1,7 @@
 # Utils for Project 3
 import os
 from random import sample
+import sys
 
 # Get the parent directory of this code
 this_script = os.path.abspath(__file__)
@@ -72,3 +73,19 @@ def test_correct_fasta_files(self, fasta_list, ss_list):
         for fasta_name in fasta_list:
             if fasta_name.replace('.fasta', '.ss') not in ss_list:
                 raise Exception('FASTA files don\'t match up with .ss files: {}'.format(fasta_name))
+
+def parse_args():
+    if len(sys.argv) < 3:
+        print(err_msg)
+        sys.exit()
+
+    try:
+        # Get the lists of fasta and ss file names
+        fasta = utils.read_directory_contents(sys.argv[1], '.fasta')
+        ss = utils.read_directory_contents(sys.argv[2], '.ss')
+    except:
+        # Given paths are not valid directories
+        print(err_msg)
+        sys.exit()
+
+    return fasta, ss
