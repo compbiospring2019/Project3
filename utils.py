@@ -53,7 +53,7 @@ def read_pssm(file_path, dir=None):
             line_list = line.strip().split()[:22]
             row = {'this-acid': line_list[1]}
             for acid_num in range(len(headers)):
-                row[headers[acid_num]] = line_list[acid_num + 2]
+                row[headers[acid_num]] = int(line_list[acid_num + 2])
             pssm.append(row)
 
     # Returns a list of dictionaries, where each dict is a row of the matrix
