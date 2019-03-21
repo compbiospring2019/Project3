@@ -3,8 +3,8 @@
 import utils
 
 #returns the mean and standard deviation of all 3 distributions
-#distributions['C'['mean']]
-#distributions['H'['std_dev']]
+#distributions['C']['mean'] = mean of distribution representing P(Xi | Y = C)
+#distributions['H']['std_dev'] = standard deviation of distribution representing P(Xi | Y = H)
 def train(fasta_train):
     return None
 
