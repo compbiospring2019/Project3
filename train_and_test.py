@@ -53,9 +53,10 @@ def test(pssm_files, pssm_dir, ss_dir):
                     feature_values.update([-1] * 10)
                 else
                     #not out of bounds
-                    row = pssm(row_num + row_offset)
+                    row = pssm[row_num + row_offset]
                     feature_values.update([row[k] for k in row.keys() if k != 'this-acid'])
             #all feature values recorded
+
 
 def main():
     #get filenames
