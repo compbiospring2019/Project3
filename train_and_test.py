@@ -38,8 +38,24 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
 #reads .pssm, .ss, and .dist files
 #expected class labels stored in a list, not written to file
 #returns overall q3 accuracy as float, as well as miscategorizations as a dictionary
-def test():
-    #
+def test(pssm_files, pssm_dir, ss_dir):
+    #for each sequence
+    for pssm_file in pssm_files:
+        pssm = utils.read_pssm(pssm_file, pssm_dir)
+        ss = utils.read_sequence(pssm_file.replace('.pssm', '.ss'), ss_dir)
+        #for each acid in the sequence
+        for row_num in range(len(pssm)):
+            #find feature values
+            feature_values = []
+            for row_offset in range(-2, 3):
+                if row_num + row_offset < 0 or row_num + row_offset >= len(pssm):
+                    #out of bounds
+                    feature_values.update([-1] * 10)
+                else
+                    #not out of bounds
+                    row = pssm(row_num + row_offset)
+                    feature_values.update([row[k] for k in row.keys() if k != 'this-acid'])
+            #all feature values recorded
 
 def main():
     #get filenames
