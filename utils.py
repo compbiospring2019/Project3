@@ -71,10 +71,18 @@ def split_files(fasta_list, ss_list):
 
 
 # make sure each .fasta has a corresponding .ss
-def test_correct_fasta_files(self, fasta_list, ss_list):
+def test_correct_fasta_files(fasta_list, ss_list):
         for fasta_name in fasta_list:
             if fasta_name.replace('.fasta', '.ss') not in ss_list:
                 raise Exception('FASTA files don\'t match up with .ss files: {}'.format(fasta_name))
+
+
+err_msg = '''
+Please enter two directory names (absolute paths)
+containing sequences for Naive Bayes training data
+(with double quotes around them if they have spaces).
+The directory with PSSM files should come first, 
+followed by the path to the .ss files.'''
 
 
 def parse_args():
@@ -84,8 +92,8 @@ def parse_args():
 
     try:
         # Get the lists of fasta and ss file names
-        fasta = utils.read_directory_contents(sys.argv[1], '.fasta')
-        ss = utils.read_directory_contents(sys.argv[2], '.ss')
+        fasta = read_directory_contents(sys.argv[1], '.fasta')
+        ss = read_directory_contents(sys.argv[2], '.ss')
     except:
         # Given paths are not valid directories
         print(err_msg)
