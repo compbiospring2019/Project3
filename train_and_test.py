@@ -4,12 +4,9 @@ import utils
 empty_row = {'A': -1, 'C': -1, 'E': -1, 'D': -1, 'G': -1, 'I': -1, 'H': -1, 'K': -1, 'F': -1, 'M': -1, 'L': -1, 'N': -1, 'Q': -1, 'P': -1, 'S': -1, 'R': -1, 'T': -1, 'W': -1, 'V': -1, 'Y': -1}
 
 
-# returns the mean and standard deviation of all 3 distributions
-# distributions['C']['mean'] = mean of distribution representing P(Xi | Y = C)
-# distributions['H']['std_dev'] = standard deviation of distribution representing P(Xi | Y = H)
+#writes distributions to files
 def train(pssm_files, pssm_dir, ss_dir):
     feature_matrix = build_feature_matrix(pssm_files, pssm_dir, ss_dir)
-    return None
 
 
 def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
@@ -38,15 +35,17 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
             feature_matrix.append(feature)
     return feature_matrix
 
+#reads .pssm, .ss, and .dist files
+#expected class labels stored in a list, not written to file
+#returns overall q3 accuracy as float, as well as miscategorizations as a dictionary
+def train():
+    #
 
 def main():
-    # get filenames
+    #get filenames
     pssm_list, ss_list, pssm_dir, ss_dir = utils.parse_args()
-    # split data into training and testing sets
-    pssm_train, pssm_test = utils.split_files(pssm_list, ss_list)
-    # train, creating 3 Gaussian distributions, 1 for each possible SS label
-    # each distribution will be stored as pairs of mean and standard deviation
-    distributions = train(pssm_train, pssm_dir, ss_dir)
+    #split data into training and testing sets
+    pssm_train, pssm_test = utils.split_files(pssm, ss)
 
 
 if __name__ == '__main__':
