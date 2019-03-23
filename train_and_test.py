@@ -38,7 +38,7 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
 #reads .pssm, .ss, and .dist files
 #expected class labels stored in a list, not written to file
 #returns overall q3 accuracy as float, as well as miscategorizations as a dictionary
-def train():
+def test():
     #
 
 def main():
