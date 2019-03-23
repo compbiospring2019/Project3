@@ -62,19 +62,19 @@ def read_pssm(file_path, dir=None):
     return pssm
 
 
-# divide the .fasta files into training and testing sets
-def split_files(fasta_list, ss_list):
-    test_correct_fasta_files(fasta_list, ss_list)
-    fasta_train = sample(fasta_list, int(0.75 * len(fasta_list)))
-    fasta_test = [fasta_name for fasta_name in fasta_list if fasta_name not in fasta_train]
-    return fasta_train, fasta_test
+# divide the .pssm files into training and testing sets
+def split_files(pssm_list, ss_list):
+    test_correct_pssm_files(pssm_list, ss_list)
+    pssm_train = sample(pssm_list, int(0.75 * len(pssm_list)))
+    pssm_test = [pssm_name for pssm_name in pssm_list if pssm_name not in pssm_train]
+    return pssm_train, pssm_test
 
 
-# make sure each .fasta has a corresponding .ss
-def test_correct_fasta_files(fasta_list, ss_list):
-        for fasta_name in fasta_list:
-            if fasta_name.replace('.fasta', '.ss') not in ss_list:
-                raise Exception('FASTA files don\'t match up with .ss files: {}'.format(fasta_name))
+# make sure each .pssm has a corresponding .ss
+def test_correct_pssm_files(pssm_list, ss_list):
+        for pssm_name in pssm_list:
+            if pssm_name.replace('.pssm', '.ss') not in ss_list:
+                raise Exception('PSSM files don\'t match up with .ss files: {}'.format(pssm_name))
 
 
 err_msg = '''
@@ -91,12 +91,13 @@ def parse_args():
         sys.exit()
 
     try:
-        # Get the lists of fasta and ss file names
-        fasta = read_directory_contents(sys.argv[1], '.fasta')
+        # Get the lists of pssm and ss file names
+        pssm = read_directory_contents(sys.argv[1], '.pssm')
         ss = read_directory_contents(sys.argv[2], '.ss')
     except:
         # Given paths are not valid directories
         print(err_msg)
         sys.exit()
 
-    return fasta, ss
+    # Return list of pssm & ss files, and their parent directories
+    return pssm, ss, sys.argv[1], sys.argv[2]
