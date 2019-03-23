@@ -61,18 +61,21 @@ def read_pssm(file_path, dir=None):
     # Returns a list of dictionaries, where each dict is a row of the matrix
     return pssm
 
-#divide the .fasta files into training and testing sets
+
+# divide the .fasta files into training and testing sets
 def split_files(fasta_list, ss_list):
     test_correct_fasta_files(fasta_list, ss_list)
     fasta_train = sample(fasta_list, int(0.75 * len(fasta_list)))
     fasta_test = [fasta_name for fasta_name in fasta_list if fasta_name not in fasta_train]
     return fasta_train, fasta_test
 
-#make sure each .fasta has a corresponding .ss
+
+# make sure each .fasta has a corresponding .ss
 def test_correct_fasta_files(self, fasta_list, ss_list):
         for fasta_name in fasta_list:
             if fasta_name.replace('.fasta', '.ss') not in ss_list:
                 raise Exception('FASTA files don\'t match up with .ss files: {}'.format(fasta_name))
+
 
 def parse_args():
     if len(sys.argv) < 3:
