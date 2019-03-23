@@ -60,6 +60,8 @@ def read_pssm(file_path, dir=None):
     # Returns a list of dictionaries, where each dict is a row of the matrix
     return pssm
 
+#prior - probability of class label
+#dists - list of means and standard deviations
 def read_dist(file_path, dir=None):
     if dir:
         file_path = os.path.join(dir, file_path)
