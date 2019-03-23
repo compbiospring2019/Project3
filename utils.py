@@ -60,6 +60,13 @@ def read_pssm(file_path, dir=None):
     # Returns a list of dictionaries, where each dict is a row of the matrix
     return pssm
 
+def read_dist(file_path, dir=None):
+    if dir:
+        file_path = os.path.join(dir, file_path)
+    with open(file+path, 'r') as f:
+        prior = float(f.readline())
+        dists = [[float(x) for x in line] for line in f]
+    return prior, dists
 
 # divide the .pssm files into training and testing sets
 def split_files(pssm_list, ss_list):
