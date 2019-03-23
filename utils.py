@@ -41,7 +41,6 @@ def read_pssm(file_path, dir=None):
     with open(file_path, 'r') as f:
         # Ignore the title line
         title = f.readline()
-        print('Title :{}:'.format(title))
         if title in ['', '\n']:
             title = f.readline()
 
