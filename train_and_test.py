@@ -84,7 +84,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 total_e += 1
                 if prediction == 'E':
                     correct_e += 1
-            else
+            else:
                 total_h += 1
                 if prediction == 'H':
                     correct_h += 1
