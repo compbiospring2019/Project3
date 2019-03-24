@@ -51,7 +51,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 if row_num + row_offset < 0 or row_num + row_offset >= len(pssm):
                     #out of bounds
                     feature_values.update([-1] * 10)
-                else
+                else:
                     #not out of bounds
                     row = pssm[row_num + row_offset]
                     feature_values.update([row[k] for k in row.keys() if k != 'this-acid'])
@@ -78,11 +78,14 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
                 max_prob = prob
     return max_prob
 
+
 def main():
-    #get filenames
+    # get filenames
     pssm_list, ss_list, pssm_dir, ss_dir = utils.parse_args()
-    #split data into training and testing sets
-    pssm_train, pssm_test = utils.split_files(pssm, ss)
+    # split data into training and testing sets
+    pssm_train, pssm_test = utils.split_files(pssm_list, ss_list)
+    # Train the model
+    train(pssm_train, pssm_dir, ss_dir)
 
 
 if __name__ == '__main__':
