@@ -52,7 +52,7 @@ def calc_sigma(features, feature_num, mu):
     sum = 0.0
     for feature in features:
         sum += (feature[feature_num] - mu) ** 2
-    return sum / len(features)
+    return sqrt(sum / (len(features) - 1))
 
 
 def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
@@ -115,16 +115,19 @@ def test(pssm_files, pssm_dir, ss_dir):
             for row_offset in range(-2, 3):
                 if row_num + row_offset < 0 or row_num + row_offset >= len(pssm):
                     #out of bounds
-                    feature_values.update([-1] * 10)
+                    feature_values.extend([-1] * 20)
                 else:
                     #not out of bounds
                     row = pssm[row_num + row_offset]
-                    feature_values.update([row[k] for k in row.keys() if k != 'this-acid'])
+                    feature_values.extend([row[k] for k in row.keys() if k != 'this-acid'])
             #all feature values recorded
             #now find the maximum probability these features were observed given C, E, and H
             gnb_c = maximum_likelihood(feature_values, "C.dist")
             gnb_e = maximum_likelihood(feature_values, "E.dist")
             gnb_h = maximum_likelihood(feature_values, "H.dist")
+            #print("GNB_C: " + str(gnb_c))
+            #print("GNB_E: " + str(gnb_e))
+            #print("GNB_H: " + str(gnb_h))
             #prediction
             if max([gnb_c, gnb_e, gnb_h]) == gnb_c:
                 prediction = 'C'
@@ -132,7 +135,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 prediction = 'E'
             else:
                 prediction = 'H'
-            actual = ss[rownum]
+            actual = ss[row_num]
             if actual == 'C':
                 total_c += 1
                 if prediction == 'C':
@@ -145,7 +148,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 total_h += 1
                 if prediction == 'H':
                     correct_h += 1
-        return [total_c, total_e, total_h, correct_c, correct_e, correct_h]
+    return [total_c, total_e, total_h, correct_c, correct_e, correct_h]
 
 #max_prob - maximum probability the given feature values were observed given the specified class label
 def maximum_likelihood(feature_values, dist_file, dir="."):
@@ -159,6 +162,7 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
             prob = 1.0
             for p in probs:
                 prob *= p
+            #prob *= prior
             if prob > max_prob:
                 max_prob = prob
     return max_prob
@@ -167,11 +171,22 @@ def gnb(value, mean, std_dev):
     return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
 
 def accuracy(metrics):
+    print("metrics: " + str(metrics))
     print("Q3 Accuracy")
     print("-----------")
-    print("C: " + str(metrics[3] / metrics[0]))
-    print("E: " + str(metrics[4] / metrics[1]))
-    print("H: " + str(metrics[5] / metrics[2]))
+    if metrics[0] == 0:
+        print("No C's observed in testing set.")
+    else:
+        print("C: " + str(metrics[3] / metrics[0]))
+    if metrics[1] == 0:
+        print("No E's observed in testing set.")
+    else:
+        print("E: " + str(metrics[4] / metrics[1]))
+    if metrics[0] == 0:
+        print("No H's observed in testing set.")
+    else:
+        print("H: " + str(metrics[5] / metrics[2]))
+    print("Overall: " + str(sum(metrics[3:7]) / sum(metrics[0:4])))
 
 def main():
     # get filenames
