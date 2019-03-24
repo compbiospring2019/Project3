@@ -37,8 +37,15 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
 
 #reads .pssm, .ss, and .dist files
 #expected class labels stored in a list, not written to file
-#returns overall q3 accuracy as float, as well as miscategorizations as a dictionary
+#returns values used to calculate accuracy
 def test(pssm_files, pssm_dir, ss_dir):
+    #metrics
+    correct_c = 0
+    correct_e = 0
+    correct_h = 0
+    total_c = 0
+    total_e = 0
+    total_h = 0
     #for each sequence
     for pssm_file in pssm_files:
         pssm = utils.read_pssm(pssm_file, pssm_dir)
@@ -61,6 +68,26 @@ def test(pssm_files, pssm_dir, ss_dir):
             gnb_e = maximum_likelihood(feature_values, "E.dist")
             gnb_h = maximum_likelihood(feature_values, "H.dist")
             #prediction
+            if max([gnb_c, gnb_e, gnb_h]) == gnb_c:
+                prediction = 'C'
+            elif max([gnb_c, gnb_e, gnb_h]) == gnb_e:
+                prediction = 'E'
+            else:
+                prediction = 'H'
+            actual = ss[rownum]
+            if actual == 'C':
+                total_c += 1
+                if prediction == 'C':
+                    correct_c += 1
+            if actual == 'E':
+                total_e += 1
+                if prediction == 'E':
+                    correct_e += 1
+            else
+                total_h += 1
+                if prediction == 'H':
+                    correct_h += 1
+        return total_c, total_e, total_h, correct_c, correct_e, correct_h
 
 #max_prob - maximum probability the given feature values were observed given the specified class label
 def maximum_likelihood(feature_values, dist_file, dir="."):
