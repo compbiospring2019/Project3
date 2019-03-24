@@ -1,12 +1,17 @@
 # functions used to process training data and make predictions about testing data
 import utils
 from math import sqrt, exp
+import os
 
 empty_row = {'A': -1, 'C': -1, 'E': -1, 'D': -1, 'G': -1, 'I': -1, 'H': -1, 'K': -1, 'F': -1, 'M': -1, 'L': -1, 'N': -1, 'Q': -1, 'P': -1, 'S': -1, 'R': -1, 'T': -1, 'W': -1, 'V': -1, 'Y': -1}
 acids_list = ['A', 'C', 'E', 'D', 'G', 'I', 'H', 'K', 'F', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y']
 
+# Get the parent directory of this code
+this_script = os.path.abspath(__file__)
+parent_directory = os.path.dirname(this_script)
 
-#writes distributions to files
+
+# Writes distributions to files
 def train(pssm_files, pssm_dir, ss_dir):
     # Generate the feature matrix
     feature_matrix = build_feature_matrix(pssm_files, pssm_dir, ss_dir)
@@ -80,7 +85,13 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
 
 
 def write_model(model):
-    pass
+    for class_label in model.keys():
+        file_name = os.path.join(parent_directory, '{}.dist'.format(class_label))
+        with open(file_name, 'w') as file:
+            file.write('{}\n'.format(model[class_label]['prior']))
+            for feature in range(100):
+                file.write('{} {}\n'.format(model[class_label]['mu'][feature], model[class_label]['sigma'][feature]))
+
 
 #reads .pssm, .ss, and .dist files
 #expected class labels stored in a list, not written to file
