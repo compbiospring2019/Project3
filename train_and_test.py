@@ -128,6 +128,7 @@ def test(pssm_files, pssm_dir, ss_dir):
             #print("GNB_C: " + str(gnb_c))
             #print("GNB_E: " + str(gnb_e))
             #print("GNB_H: " + str(gnb_h))
+            #print()
             #prediction
             if max([gnb_c, gnb_e, gnb_h]) == gnb_c:
                 prediction = 'C'
@@ -162,7 +163,7 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
             prob = 1.0
             for p in probs:
                 prob *= p
-            #prob *= prior
+            prob *= prior
             if prob > max_prob:
                 max_prob = prob
     return max_prob
