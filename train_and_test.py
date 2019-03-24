@@ -3,11 +3,51 @@ import utils
 from math import sqrt, exp
 
 empty_row = {'A': -1, 'C': -1, 'E': -1, 'D': -1, 'G': -1, 'I': -1, 'H': -1, 'K': -1, 'F': -1, 'M': -1, 'L': -1, 'N': -1, 'Q': -1, 'P': -1, 'S': -1, 'R': -1, 'T': -1, 'W': -1, 'V': -1, 'Y': -1}
+acids_list = ['A', 'C', 'E', 'D', 'G', 'I', 'H', 'K', 'F', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y']
 
 
 #writes distributions to files
 def train(pssm_files, pssm_dir, ss_dir):
+    # Generate the feature matrix
     feature_matrix = build_feature_matrix(pssm_files, pssm_dir, ss_dir)
+    # Calculate the mu and sigma and prior values
+    model = calculate_model(feature_matrix)
+    # Write the model to a file
+    write_model(model)
+
+
+def calculate_model(matrix):
+    model = {'C': {}, 'E': {}, 'H': {}}
+    amino_acids = [key for key in empty_row.keys()]
+
+    for class_label in model.keys():
+        # For each class label, calculate sigmas, mus, and prior terms
+        features = [row for row in matrix if row['ss'] == class_label]
+        model[class_label]['sigma'] = {}
+        model[class_label]['mu'] = {}
+        model[class_label]['prior'] = float(len(features)) / len(matrix)
+
+        # Calculate sigmas and mus for each feature
+        for feature in range(100):
+            mu = calc_mu(features, feature)
+            model[class_label]['sigma'][feature] = calc_sigma(features, feature, mu)
+            model[class_label]['mu'][feature] = mu
+
+    return model
+
+
+def calc_mu(features, feature_num):
+    sum = 0.0
+    for feature in features:
+        sum += feature[feature_num]
+    return sum/len(features)
+
+
+def calc_sigma(features, feature_num, mu):
+    sum = 0.0
+    for feature in features:
+        sum += (feature[feature_num] - mu) ** 2
+    return sum / len(features)
 
 
 def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
@@ -26,15 +66,21 @@ def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
             for row_offset in range(-2, 3):
                 if row_num + row_offset < 0:
                     # We're at the top of the PSSM
-                    feature[row_offset] = empty_row
+                    values = empty_row
                 elif row_num + row_offset >= len(pssm):
                     # We're at the bottom of the PSSM
-                    feature[row_offset] = empty_row
+                    values = empty_row
                 else:
                     # We're somewhere in the middle
-                    feature[row_offset] = pssm[row_num + row_offset]
+                    values = pssm[row_num + row_offset]
+                for val_num, acid in enumerate(acids_list):
+                    feature[((row_offset + 2) * 20) + val_num] = values[acid]
             feature_matrix.append(feature)
     return feature_matrix
+
+
+def write_model(model):
+    pass
 
 #reads .pssm, .ss, and .dist files
 #expected class labels stored in a list, not written to file
