@@ -1,5 +1,6 @@
 # functions used to process training data and make predictions about testing data
 import utils
+from math import sqrt, exp
 
 empty_row = {'A': -1, 'C': -1, 'E': -1, 'D': -1, 'G': -1, 'I': -1, 'H': -1, 'K': -1, 'F': -1, 'M': -1, 'L': -1, 'N': -1, 'Q': -1, 'P': -1, 'S': -1, 'R': -1, 'T': -1, 'W': -1, 'V': -1, 'Y': -1}
 
@@ -105,6 +106,8 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
                 max_prob = prob
     return max_prob
 
+def gnb(value, mean, std_dev):
+    return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
 
 def main():
     # get filenames
