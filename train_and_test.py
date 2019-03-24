@@ -56,7 +56,27 @@ def test(pssm_files, pssm_dir, ss_dir):
                     row = pssm[row_num + row_offset]
                     feature_values.update([row[k] for k in row.keys() if k != 'this-acid'])
             #all feature values recorded
+            #now find the maximum probability these features were observed given C, E, and H
+            gnb_c = maximum_likelihood(feature_values, "C.dist")
+            gnb_e = maximum_likelihood(feature_values, "E.dist")
+            gnb_h = maximum_likelihood(feature_values, "H.dist")
+            #prediction
 
+#max_prob - maximum probability the given feature values were observed given the specified class label
+def maximum_likelihood(feature_values, dist_file, dir="."):
+    dist_file = os.path.join(dir, dist_file)
+    with open(dist_file, 'r') as f:
+        prior = float(f.readline())
+        max_prob = 0.0
+        for line in f:
+            mean, std_dev = [float(x) for x in line.split()]
+            probs = [gnb(value, mean, std_dev) for value in feature_values]
+            prob = 1.0
+            for p in probs:
+                prob *= p
+            if prob > max_prob:
+                max_prob = prob
+    return max_prob
 
 def main():
     #get filenames
