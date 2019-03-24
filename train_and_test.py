@@ -145,7 +145,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 total_h += 1
                 if prediction == 'H':
                     correct_h += 1
-        return total_c, total_e, total_h, correct_c, correct_e, correct_h
+        return [total_c, total_e, total_h, correct_c, correct_e, correct_h]
 
 #max_prob - maximum probability the given feature values were observed given the specified class label
 def maximum_likelihood(feature_values, dist_file, dir="."):
@@ -166,6 +166,13 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
 def gnb(value, mean, std_dev):
     return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
 
+def accuracy(metrics):
+    print("Q3 Accuracy")
+    print("-----------")
+    print("C: " + str(metrics[3] / metrics[0]))
+    print("E: " + str(metrics[4] / metrics[1]))
+    print("H: " + str(metrics[5] / metrics[2]))
+
 def main():
     # get filenames
     pssm_list, ss_list, pssm_dir, ss_dir = utils.parse_args()
@@ -173,6 +180,10 @@ def main():
     pssm_train, pssm_test = utils.split_files(pssm_list, ss_list)
     # Train the model
     train(pssm_train, pssm_dir, ss_dir)
+    #test
+    metrics = test(pssm_test, pssm_dir, ss_dir)
+    #accuracy
+    accuracy(metrics)
 
 
 if __name__ == '__main__':
