@@ -94,7 +94,7 @@ followed by the path to the .ss files.'''
 
 
 def parse_args():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print(err_msg)
         sys.exit()
 
@@ -102,10 +102,11 @@ def parse_args():
         # Get the lists of pssm and ss file names
         pssm = read_directory_contents(sys.argv[1], '.pssm')
         ss = read_directory_contents(sys.argv[2], '.ss')
+        pssm_classify = read_pssm(sys.argv[3])
     except:
         # Given paths are not valid directories
         print(err_msg)
         sys.exit()
 
     # Return list of pssm & ss files, and their parent directories
-    return pssm, ss, sys.argv[1], sys.argv[2]
+    return pssm, ss, sys.argv[1], sys.argv[2], pssm_classify

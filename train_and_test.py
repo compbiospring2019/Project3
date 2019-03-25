@@ -191,10 +191,39 @@ def accuracy(metrics):
         print("H: " + str(float(metrics[5]) / metrics[2]))
     print("Overall: " + str(float(sum(metrics[3:6])) / sum(metrics[0:3])))
 
+def classify(pssm_classify):
+    predictions = []
+    for row_num in range(len(pssm_classify)):
+        # find feature values
+        feature_values = []
+        for row_offset in range(-2, 3):
+            if row_num + row_offset < 0 or row_num + row_offset >= len(pssm_classify):
+                # out of bounds
+                feature_values.extend([-1] * 20)
+            else:
+                # not out of bounds
+                row = pssm_classify[row_num + row_offset]
+                feature_values.extend([row[k] for k in acids_list])
+        # all feature values recorded
+        # now find the maximum probability these features were observed given C, E, and H
+        gnb_c = maximum_likelihood(feature_values, "C.dist")
+        gnb_e = maximum_likelihood(feature_values, "E.dist")
+        gnb_h = maximum_likelihood(feature_values, "H.dist")
+        # prediction
+        if max([gnb_c, gnb_e, gnb_h]) == gnb_c:
+            prediction = 'C'
+        elif max([gnb_c, gnb_e, gnb_h]) == gnb_e:
+            prediction = 'E'
+        else:
+            prediction = 'H'
+        predictions.append(prediction)
+    print("Prediction")
+    print("----------")
+    print("".join(predictions))
 
 def main():
     # get filenames
-    pssm_list, ss_list, pssm_dir, ss_dir = utils.parse_args()
+    pssm_list, ss_list, pssm_dir, ss_dir, pssm_classify = utils.parse_args()
     # split data into training and testing sets
     pssm_train, pssm_test = utils.split_files(pssm_list, ss_list)
     # Train the model
@@ -204,7 +233,8 @@ def main():
     metrics = test(pssm_test, pssm_dir, ss_dir)
     # accuracy
     accuracy(metrics)
-
+    #classify
+    classify(pssm_classify)
 
 if __name__ == '__main__':
     main()
