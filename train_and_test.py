@@ -23,7 +23,6 @@ def train(pssm_files, pssm_dir, ss_dir):
 
 def calculate_model(matrix):
     model = {'C': {}, 'E': {}, 'H': {}}
-    amino_acids = [key for key in empty_row.keys()]
 
     for class_label in model.keys():
         # For each class label, calculate sigmas, mus, and prior terms
@@ -52,7 +51,7 @@ def calc_sigma(features, feature_num, mu):
     sum = 0.0
     for feature in features:
         sum += (feature[feature_num] - mu) ** 2
-    return sqrt(sum / (len(features) - 1))
+    return sqrt(sum / len(features))
 
 
 def build_feature_matrix(pssm_files, pssm_dir, ss_dir):
@@ -171,7 +170,7 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
 
 
 def gnb(value, mean, std_dev):
-    return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
+    return exp(-0.5 * (value - mean) ** 2 / (std_dev ** 2)) / sqrt(2 * 3.14159 * (std_dev ** 2))
 
 
 def accuracy(metrics):
