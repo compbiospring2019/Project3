@@ -119,7 +119,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 else:
                     #not out of bounds
                     row = pssm[row_num + row_offset]
-                    feature_values.extend([row[k] for k in row.keys() if k != 'this-acid'])
+                    feature_values.extend([row[k] for k in acids_list])
             #all feature values recorded
             #now find the maximum probability these features were observed given C, E, and H
             gnb_c = maximum_likelihood(feature_values, "C.dist")
@@ -141,7 +141,7 @@ def test(pssm_files, pssm_dir, ss_dir):
                 total_c += 1
                 if prediction == 'C':
                     correct_c += 1
-            if actual == 'E':
+            elif actual == 'E':
                 total_e += 1
                 if prediction == 'E':
                     correct_e += 1
@@ -151,22 +151,26 @@ def test(pssm_files, pssm_dir, ss_dir):
                     correct_h += 1
     return [total_c, total_e, total_h, correct_c, correct_e, correct_h]
 
+dists = {}
+
 #max_prob - maximum probability the given feature values were observed given the specified class label
 def maximum_likelihood(feature_values, dist_file, dir="."):
     dist_file = os.path.join(dir, dist_file)
-    with open(dist_file, 'r') as f:
-        prior = float(f.readline())
-        max_prob = 0.0
-        for line in f:
-            mean, std_dev = [float(x) for x in line.split()]
-            probs = [gnb(value, mean, std_dev) for value in feature_values]
-            prob = 1.0
-            for p in probs:
-                prob *= p
-            prob *= prior
-            if prob > max_prob:
-                max_prob = prob
-    return max_prob
+    if dist_file not in dists:
+        print('Reading in {}'.format(dist_file))
+        dists[dist_file] = {'sigma': {}, 'mu': {}}
+        with open(dist_file, 'r') as f:
+            dists[dist_file]['prior'] = float(f.readline())
+            for line_num in range(100):
+                mean, std_dev = [float(x) for x in f.readline().split()]
+                dists[dist_file]['sigma'][line_num] = std_dev
+                dists[dist_file]['mu'][line_num] = mean
+
+    prob = dists[dist_file]['prior']
+    for feat_num in range(100):
+        prob *= gnb(feature_values[feat_num], dists[dist_file]['mu'][feat_num], dists[dist_file]['mu'][feat_num])
+    return prob
+
 
 def gnb(value, mean, std_dev):
     return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
@@ -178,16 +182,16 @@ def accuracy(metrics):
     if metrics[0] == 0:
         print("No C's observed in testing set.")
     else:
-        print("C: " + str(metrics[3] / metrics[0]))
+        print("C: " + str(float(metrics[3]) / metrics[0]))
     if metrics[1] == 0:
         print("No E's observed in testing set.")
     else:
-        print("E: " + str(metrics[4] / metrics[1]))
+        print("E: " + str(float(metrics[4]) / metrics[1]))
     if metrics[0] == 0:
         print("No H's observed in testing set.")
     else:
-        print("H: " + str(metrics[5] / metrics[2]))
-    print("Overall: " + str(sum(metrics[3:7]) / sum(metrics[0:4])))
+        print("H: " + str(float(metrics[5]) / metrics[2]))
+    print("Overall: " + str(float(sum(metrics[3:6])) / sum(metrics[0:3])))
 
 def main():
     # get filenames
@@ -196,6 +200,7 @@ def main():
     pssm_train, pssm_test = utils.split_files(pssm_list, ss_list)
     # Train the model
     train(pssm_train, pssm_dir, ss_dir)
+    print('Trained the model. Now for testing...')
     #test
     metrics = test(pssm_test, pssm_dir, ss_dir)
     #accuracy
