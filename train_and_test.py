@@ -93,43 +93,39 @@ def write_model(model):
                 file.write('{} {}\n'.format(model[class_label]['mu'][feature], model[class_label]['sigma'][feature]))
 
 
-#reads .pssm, .ss, and .dist files
-#expected class labels stored in a list, not written to file
-#returns values used to calculate accuracy
+# reads .pssm, .ss, and .dist files
+# expected class labels stored in a list, not written to file
+# returns values used to calculate accuracy
 def test(pssm_files, pssm_dir, ss_dir):
-    #metrics
+    # metrics
     correct_c = 0
     correct_e = 0
     correct_h = 0
     total_c = 0
     total_e = 0
     total_h = 0
-    #for each sequence
+    # for each sequence
     for pssm_file in pssm_files:
         pssm = utils.read_pssm(pssm_file, pssm_dir)
         ss = utils.read_sequence(pssm_file.replace('.pssm', '.ss'), ss_dir)
-        #for each acid in the sequence
+        # for each acid in the sequence
         for row_num in range(len(pssm)):
-            #find feature values
+            # find feature values
             feature_values = []
             for row_offset in range(-2, 3):
                 if row_num + row_offset < 0 or row_num + row_offset >= len(pssm):
-                    #out of bounds
+                    # out of bounds
                     feature_values.extend([-1] * 20)
                 else:
-                    #not out of bounds
+                    # not out of bounds
                     row = pssm[row_num + row_offset]
                     feature_values.extend([row[k] for k in acids_list])
-            #all feature values recorded
-            #now find the maximum probability these features were observed given C, E, and H
+            # all feature values recorded
+            # now find the maximum probability these features were observed given C, E, and H
             gnb_c = maximum_likelihood(feature_values, "C.dist")
             gnb_e = maximum_likelihood(feature_values, "E.dist")
             gnb_h = maximum_likelihood(feature_values, "H.dist")
-            #print("GNB_C: " + str(gnb_c))
-            #print("GNB_E: " + str(gnb_e))
-            #print("GNB_H: " + str(gnb_h))
-            #print()
-            #prediction
+            # prediction
             if max([gnb_c, gnb_e, gnb_h]) == gnb_c:
                 prediction = 'C'
             elif max([gnb_c, gnb_e, gnb_h]) == gnb_e:
@@ -151,9 +147,11 @@ def test(pssm_files, pssm_dir, ss_dir):
                     correct_h += 1
     return [total_c, total_e, total_h, correct_c, correct_e, correct_h]
 
+
 dists = {}
 
-#max_prob - maximum probability the given feature values were observed given the specified class label
+
+# max_prob - maximum probability the given feature values were observed given the specified class label
 def maximum_likelihood(feature_values, dist_file, dir="."):
     dist_file = os.path.join(dir, dist_file)
     if dist_file not in dists:
@@ -175,6 +173,7 @@ def maximum_likelihood(feature_values, dist_file, dir="."):
 def gnb(value, mean, std_dev):
     return 1 / sqrt(2 * 3.14159 * std_dev ** 2) * exp(-1 * (value - mean) ** 2 / (2 * std_dev ** 2))
 
+
 def accuracy(metrics):
     print("metrics: " + str(metrics))
     print("Q3 Accuracy")
@@ -193,6 +192,7 @@ def accuracy(metrics):
         print("H: " + str(float(metrics[5]) / metrics[2]))
     print("Overall: " + str(float(sum(metrics[3:6])) / sum(metrics[0:3])))
 
+
 def main():
     # get filenames
     pssm_list, ss_list, pssm_dir, ss_dir = utils.parse_args()
@@ -201,9 +201,9 @@ def main():
     # Train the model
     train(pssm_train, pssm_dir, ss_dir)
     print('Trained the model. Now for testing...')
-    #test
+    # test
     metrics = test(pssm_test, pssm_dir, ss_dir)
-    #accuracy
+    # accuracy
     accuracy(metrics)
 
 
